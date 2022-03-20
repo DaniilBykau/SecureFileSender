@@ -23,4 +23,10 @@ public class HelloController  {
 
     }
 
+    @FXML
+    public void receiveFile(ActionEvent actionEvent) {
+        model = new MainModel(filesUploadedList);
+        filesSupport = new FilesSupport(model);
+        filesSupport.receiveFile(actionEvent, filesReceivedList);
+    }
 }

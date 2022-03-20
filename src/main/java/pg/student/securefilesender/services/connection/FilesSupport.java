@@ -41,6 +41,11 @@ public class FilesSupport {
         Thread t1 = new Thread(new Client(filesUploadedList));
         t1.start();
 
+//        Server server = new Server(filesReceivedList);
+//        server.startServer();
+    }
+
+    public void receiveFile(ActionEvent event, ListView filesReceivedList){
         Server server = new Server(filesReceivedList);
         server.startServer();
     }
