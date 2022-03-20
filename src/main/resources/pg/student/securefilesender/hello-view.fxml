@@ -10,17 +10,18 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.text.Text?>
 <HBox spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="pg.student.securefilesender.controllers.HelloController">
     <children>
         <AnchorPane prefHeight="360.0" prefWidth="320.0" xmlns="http://javafx.com/javafx/11.0.2"
                     xmlns:fx="http://javafx.com/fxml/1">
-
-            <TextField AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0"/>
+            <Text AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="8.0">IP: </Text>
+            <TextField fx:id="nameIP" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="5.0"/>
             <Button onAction="#uploadFile" text="Upload file"
-                    AnchorPane.topAnchor="35.0" AnchorPane.leftAnchor="5.0" />
+                    AnchorPane.topAnchor="35.0" AnchorPane.leftAnchor="5.0"/>
             <Button onAction="#receiveFile" text="Receive file"
-                    AnchorPane.topAnchor="65.0" AnchorPane.leftAnchor="5.0" />
+                    AnchorPane.topAnchor="65.0" AnchorPane.leftAnchor="5.0"/>
         </AnchorPane>
 
         <VBox xmlns="http://javafx.com/javafx/8.0.141"

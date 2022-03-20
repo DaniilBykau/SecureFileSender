@@ -1,19 +1,16 @@
 package pg.student.securefilesender.services.connection;
 
 import javafx.collections.ObservableList;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+
 import javafx.scene.control.ListView;
-import pg.student.securefilesender.HelloApplication;
-import pg.student.securefilesender.controllers.HelloController;
-import pg.student.securefilesender.models.MainModel;
+
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.Socket;
-import java.util.List;
+
 
 public class Client implements Runnable {
 
@@ -22,15 +19,17 @@ public class Client implements Runnable {
 
     private ListView filesUploadedList;
     ObservableList<File> listOfFilesUploaded;
+    String ipAddressName;
 
-    public Client(ListView filesUploadedList) {
+    public Client(ListView filesUploadedList, String ipAddressName) {
         this.filesUploadedList = filesUploadedList;
+        this.ipAddressName = ipAddressName;
     }
 
     public void sendFile(){
         try {
 
-            Socket socket = new Socket("localhost", 5000);
+            Socket socket = new Socket(ipAddressName, 5000);
 
             dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
@@ -57,8 +56,6 @@ public class Client implements Runnable {
             System.out.println(e.toString());
         }
     }
-
-
 
     @Override
     public void run() {

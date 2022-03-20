@@ -3,11 +3,11 @@ package pg.student.securefilesender.controllers;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
-import pg.student.securefilesender.models.MainModel;
+import javafx.scene.control.TextField;
 import pg.student.securefilesender.services.connection.FilesSupport;
 
 public class HelloController  {
-    private MainModel model;
+
     private FilesSupport filesSupport;
     @FXML
     private ListView filesUploadedList;
@@ -16,17 +16,20 @@ public class HelloController  {
     private ListView filesReceivedList;
 
     @FXML
-    public void uploadFile(ActionEvent actionEvent) {
-        model = new MainModel(filesUploadedList);
-        filesSupport = new FilesSupport(model);
-        filesSupport.uploadFile(actionEvent, filesUploadedList, filesReceivedList);
+    private TextField nameIP;
 
+    @FXML
+    public void uploadFile(ActionEvent actionEvent) {
+
+        filesSupport = new FilesSupport();
+        String ipAddressName = nameIP.getText().toString();
+        filesSupport.uploadFile(actionEvent, filesUploadedList, ipAddressName);
     }
 
     @FXML
     public void receiveFile(ActionEvent actionEvent) {
-        model = new MainModel(filesUploadedList);
-        filesSupport = new FilesSupport(model);
+
+        filesSupport = new FilesSupport();
         filesSupport.receiveFile(actionEvent, filesReceivedList);
     }
 }
