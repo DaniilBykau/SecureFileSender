@@ -16,12 +16,17 @@
     <children>
         <AnchorPane prefHeight="360.0" prefWidth="320.0" xmlns="http://javafx.com/javafx/11.0.2"
                     xmlns:fx="http://javafx.com/fxml/1">
-            <Text AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="8.0">IP: </Text>
+            <Text AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="10.0">IP: </Text>
             <TextField fx:id="nameIP" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="5.0"/>
+            <Text fx:id="serverStatus" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="10.0">Status </Text>
             <Button onAction="#uploadFile" text="Upload file"
                     AnchorPane.topAnchor="35.0" AnchorPane.leftAnchor="5.0"/>
-            <Button onAction="#receiveFile" text="Receive file"
+            <Button onAction="#startConnection" text="Start server"
                     AnchorPane.topAnchor="65.0" AnchorPane.leftAnchor="5.0"/>
+            <Button onAction="#waitConnection" text="Wait connection"
+                    AnchorPane.topAnchor="65.0" AnchorPane.leftAnchor="150.0"/>
+            <Button onAction="#closeConnection" text="Close connection"
+                    AnchorPane.topAnchor="95.0" AnchorPane.leftAnchor="5.0"/>
         </AnchorPane>
 
         <VBox xmlns="http://javafx.com/javafx/8.0.141"

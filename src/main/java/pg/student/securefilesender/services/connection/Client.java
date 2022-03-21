@@ -21,6 +21,8 @@ public class Client implements Runnable {
     ObservableList<File> listOfFilesUploaded;
     String ipAddressName;
 
+    Socket socket;
+
     public Client(ListView filesUploadedList, String ipAddressName) {
         this.filesUploadedList = filesUploadedList;
         this.ipAddressName = ipAddressName;
@@ -29,7 +31,7 @@ public class Client implements Runnable {
     public void sendFile(){
         try {
 
-            Socket socket = new Socket(ipAddressName, 5000);
+            socket = new Socket(ipAddressName, 5000);
 
             dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
