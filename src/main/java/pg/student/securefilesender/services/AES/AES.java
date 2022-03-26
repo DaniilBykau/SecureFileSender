@@ -10,11 +10,27 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 public class AES {
+    public SecretKey getKey() {
+        return key;
+    }
+
+    public void setKey(SecretKey key) {
+        this.key = key;
+    }
+
+    public IvParameterSpec getIv() {
+        return iv;
+    }
+
+    public void setIv(IvParameterSpec iv) {
+        this.iv = iv;
+    }
+
     private SecretKey key;
     private IvParameterSpec iv;
 
     // n -> keySize
-    public SecretKey generateKeyAndIv(int n){
+    public SecretKey generateKeyAes(int n){
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
             keyGenerator.init(n);

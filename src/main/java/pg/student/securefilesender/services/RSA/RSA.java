@@ -1,6 +1,8 @@
 package pg.student.securefilesender.services.RSA;
 
 import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -12,22 +14,22 @@ public class RSA {
     private PrivateKey privateKey;
     private PublicKey publicKey;
 
-    private String encode(byte[] data){
+    private String encode(byte[] data) {
         return Base64.getEncoder().encodeToString(data);
     }
-    private byte[] decode(String data){
+
+    private byte[] decode(String data) {
         return Base64.getDecoder().decode(data);
     }
 
-    public void initRSA(){
+    public void initRSA() {
         try {
             KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
             generator.initialize(512);
             KeyPair pair = generator.generateKeyPair();
             privateKey = pair.getPrivate();
             publicKey = pair.getPublic();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
     }
@@ -49,7 +51,29 @@ public class RSA {
 
         byte[] decryptedMessageBytes = decryptCipher.doFinal(encryptedBytes);
 
-        return new String(decryptedMessageBytes,"UTF8");
+        return new String(decryptedMessageBytes, "UTF8");
+    }
+
+    public SecretKey encrypt(SecretKey aesKeyToEncrypt, PublicKey rsaPublicKey) throws Exception {
+        byte[] data = aesKeyToEncrypt.getEncoded();
+
+        Cipher encryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        encryptCipher.init(Cipher.ENCRYPT_MODE, rsaPublicKey);
+
+        byte[] encryptedMessageBytes = encryptCipher.doFinal(data);
+
+        return new SecretKeySpec(data, 0, data.length, "AES");
+    }
+
+    public SecretKey decrypt(SecretKey aesKeyToDecrypt, PrivateKey rsaPrivateKey) throws Exception {
+        byte[] data = aesKeyToDecrypt.getEncoded();
+
+        Cipher decryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        decryptCipher.init(Cipher.DECRYPT_MODE, rsaPrivateKey);
+
+        byte[] decryptedMessageBytes = decryptCipher.doFinal(data);
+
+        return new SecretKeySpec(data, 0, data.length, "AES");
     }
 
 
