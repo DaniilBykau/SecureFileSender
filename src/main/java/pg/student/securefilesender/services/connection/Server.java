@@ -8,6 +8,7 @@ import pg.student.securefilesender.controllers.HelloController;
 import pg.student.securefilesender.services.RSA.RSA;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -29,6 +30,7 @@ public class Server {
     RSA rsa;
     SecretKey aesEncryptedAes;
     SecretKey aesKey;
+    private IvParameterSpec iv;
 
     private ListView filesReceivedList;
     ObservableList<File> listOfFilesUploaded = FXCollections.observableArrayList();
@@ -93,10 +95,9 @@ public class Server {
 
     private void getEncryptedAes() {
         try {
-
             this.aesEncryptedAes = (SecretKey) this.inObject.readObject();
+            this.iv = (IvParameterSpec) this.inObject.readObject();
             this.aesKey = rsa.decrypt(this.aesEncryptedAes, rsa.getPrivateKey());
-
         } catch (Exception e) {
             System.out.println(e.toString());
         }

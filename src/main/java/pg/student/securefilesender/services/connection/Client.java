@@ -53,6 +53,7 @@ public class Client implements Runnable {
             this.rsaPublicKey = (PublicKey) in.readObject();
             encryption(rsaPublicKey);
             out.writeObject(encryptedAesKey);
+            out.writeObject(iv);
 
             this.listOfFilesUploaded = filesUploadedList.getItems();
             this.testFile = listOfFilesUploaded.get(0);
