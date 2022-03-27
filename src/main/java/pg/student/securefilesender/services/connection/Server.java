@@ -28,9 +28,10 @@ public class Server {
     private Socket clientSocket;
 
     RSA rsa;
-    SecretKey aesEncryptedAes;
+    byte [] aesEncryptedAes = new byte[64];
     SecretKey aesKey;
-    private IvParameterSpec iv;
+    private byte[] iv = new byte [16];;
+
 
     private ListView filesReceivedList;
     ObservableList<File> listOfFilesUploaded = FXCollections.observableArrayList();
@@ -95,8 +96,8 @@ public class Server {
 
     private void getEncryptedAes() {
         try {
-            this.aesEncryptedAes = (SecretKey) this.inObject.readObject();
-            this.iv = (IvParameterSpec) this.inObject.readObject();
+            this.dataInputStream.read(this.aesEncryptedAes);
+            this.dataInputStream.read(this.iv);
             this.aesKey = rsa.decrypt(this.aesEncryptedAes, rsa.getPrivateKey());
         } catch (Exception e) {
             System.out.println(e.toString());

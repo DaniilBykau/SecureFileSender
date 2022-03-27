@@ -18,16 +18,16 @@ public class AES {
         this.key = key;
     }
 
-    public IvParameterSpec getIv() {
+    public byte[] getIv() {
         return iv;
     }
 
-    public void setIv(IvParameterSpec iv) {
+    public void setIv(byte[] iv) {
         this.iv = iv;
     }
 
     private SecretKey key;
-    private IvParameterSpec iv;
+    private byte[] iv;
 
     // n -> keySize
     public SecretKey generateKeyAes(int n){
@@ -43,17 +43,19 @@ public class AES {
         return key;
     }
 
-    public IvParameterSpec generateIv(){
+    public byte[] generateIv(){
         byte[] iv = new byte[16];
-        new SecureRandom().nextBytes(iv);
-        return new IvParameterSpec(iv);
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(iv);
+        return iv;
     }
 
-    public String encrypt(String textToEncrypt){
+    public String encrypt(String textToEncrypt, byte [] iv, SecretKey keyAES){
         byte[] cipherText = null;
         try{
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, this.key, iv);
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+            cipher.init(Cipher.ENCRYPT_MODE, this.key, ivParameterSpec);
             cipherText = cipher.doFinal(textToEncrypt.getBytes());
         }catch (Exception e){
             System.out.println(e.toString());
@@ -62,11 +64,12 @@ public class AES {
                 .encodeToString(cipherText);
     }
 
-    public String decrypt(String textToDecrypt){
+    public String decrypt(String textToDecrypt, byte [] iv, SecretKey keyAES){
         byte[] plainText = null;
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, this.key, iv);
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+            cipher.init(Cipher.DECRYPT_MODE, this.key, ivParameterSpec);
             plainText = cipher.doFinal(Base64.getDecoder()
                     .decode(textToDecrypt));
         }catch (Exception e){
@@ -75,10 +78,11 @@ public class AES {
         return new String(plainText);
     }
 
-    public void encryptFile(){
+    public void encryptFile( byte [] iv, SecretKey keyAES){
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, this.key, this.iv);
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+            cipher.init(Cipher.ENCRYPT_MODE, this.key, ivParameterSpec);
             FileInputStream inputStream = new FileInputStream("Daniil_Bykau.pdf");
             FileOutputStream outputStream = new FileOutputStream("Daniil_Bykau1.pdf");
             byte[] buffer = new byte[64];
@@ -102,10 +106,11 @@ public class AES {
 
     }
 
-    public void decryptFile(){
+    public void decryptFile( byte [] iv, SecretKey keyAES){
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, this.key, this.iv);
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+            cipher.init(Cipher.DECRYPT_MODE, this.key, ivParameterSpec);
             FileInputStream inputStream = new FileInputStream("Daniil_Bykau1.pdf");
             FileOutputStream outputStream = new FileOutputStream("Daniil_Bykau2.pdf");
             byte[] buffer = new byte[64];

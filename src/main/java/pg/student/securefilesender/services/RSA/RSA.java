@@ -54,26 +54,19 @@ public class RSA {
         return new String(decryptedMessageBytes, "UTF8");
     }
 
-    public SecretKey encrypt(SecretKey aesKeyToEncrypt, PublicKey rsaPublicKey) throws Exception {
-        byte[] data = aesKeyToEncrypt.getEncoded();
+    public byte[] encrypt(SecretKey aesKeyToEncrypt, PublicKey rsaPublicKey) throws Exception {
 
-        Cipher encryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        encryptCipher.init(Cipher.ENCRYPT_MODE, rsaPublicKey);
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.WRAP_MODE, rsaPublicKey);
+        return cipher.wrap(aesKeyToEncrypt);
 
-        byte[] encryptedMessageBytes = encryptCipher.doFinal(data);
-
-        return new SecretKeySpec(data, 0, data.length, "AES");
     }
 
-    public SecretKey decrypt(SecretKey aesKeyToDecrypt, PrivateKey rsaPrivateKey) throws Exception {
-        byte[] data = aesKeyToDecrypt.getEncoded();
+    public SecretKey decrypt(byte [] aesKeyToDecrypt, PrivateKey rsaPrivateKey) throws Exception {
 
-        Cipher decryptCipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        decryptCipher.init(Cipher.DECRYPT_MODE, rsaPrivateKey);
-
-        byte[] decryptedMessageBytes = decryptCipher.doFinal(data);
-
-        return new SecretKeySpec(data, 0, data.length, "AES");
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.UNWRAP_MODE, rsaPrivateKey);
+        return (SecretKey) cipher.unwrap(aesKeyToDecrypt, "AES", Cipher.SECRET_KEY);
     }
 
 

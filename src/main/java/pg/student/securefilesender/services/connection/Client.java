@@ -27,8 +27,8 @@ public class Client implements Runnable {
     private AES aes;
     private RSA rsa;
     private SecretKey AesKey;
-    private SecretKey encryptedAesKey;
-    private IvParameterSpec iv;
+    private byte [] encryptedAesKey;
+    private byte[] iv;
 
     private File testFile;
 
@@ -52,8 +52,9 @@ public class Client implements Runnable {
 
             this.rsaPublicKey = (PublicKey) in.readObject();
             encryption(rsaPublicKey);
-            out.writeObject(encryptedAesKey);
-            out.writeObject(iv);
+            dataOutputStream.write(encryptedAesKey);
+            dataOutputStream.write(iv);
+            dataOutputStream.flush();
 
             this.listOfFilesUploaded = filesUploadedList.getItems();
             this.testFile = listOfFilesUploaded.get(0);
