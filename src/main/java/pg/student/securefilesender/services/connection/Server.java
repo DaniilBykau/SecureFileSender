@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.text.Text;
 import pg.student.securefilesender.controllers.HelloController;
+import pg.student.securefilesender.services.AES.AES;
 import pg.student.securefilesender.services.RSA.RSA;
 
 import javax.crypto.SecretKey;
@@ -30,7 +31,10 @@ public class Server {
     RSA rsa;
     byte [] aesEncryptedAes = new byte[64];
     SecretKey aesKey;
-    private byte[] iv = new byte [16];;
+    private byte[] iv = new byte [16];
+    AES aes;
+
+    File fileEncrypted;
 
 
     private ListView filesReceivedList;
@@ -72,7 +76,8 @@ public class Server {
             sendRSA();
             getEncryptedAes();
             receiveFile();
-
+            aes = new AES();
+            aes.decryptFile(this.iv, this.aesKey, this.fileEncrypted);
         } catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -107,7 +112,7 @@ public class Server {
     public void receiveFile() {
         try {
             int bytes = 0;
-            FileOutputStream fileOutputStream = new FileOutputStream("C:\\Users\\santi\\Downloads\\COMLab3\\COMLab3\\new_file.txt");
+            FileOutputStream fileOutputStream = new FileOutputStream("Daniil_Bykau1.txt");
 
             long size = dataInputStream.readLong();     // read file size
             byte[] buffer = new byte[4 * 1024];
@@ -115,9 +120,9 @@ public class Server {
                 fileOutputStream.write(buffer, 0, bytes);
                 size -= bytes;      // read upto file size
             }
-            File file = new File("new_file.txt");
+            this.fileEncrypted = new File("Daniil_Bykau1.txt");
 
-            listOfFilesUploaded.add(file);
+            listOfFilesUploaded.add(this.fileEncrypted);
             filesReceivedList.setItems(listOfFilesUploaded);
             fileOutputStream.close();
         } catch (Exception e) {

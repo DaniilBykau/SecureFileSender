@@ -58,8 +58,10 @@ public class Client implements Runnable {
 
             this.listOfFilesUploaded = filesUploadedList.getItems();
             this.testFile = listOfFilesUploaded.get(0);
-            FileInputStream fileInputStream = new FileInputStream(testFile);
-            dataOutputStream.writeLong(testFile.length());
+            aes.encryptFile(this.iv, this.AesKey, this.testFile);
+            File fileToSend = new File("Daniil_Bykau1.txt");
+            FileInputStream fileInputStream = new FileInputStream(fileToSend);
+            dataOutputStream.writeLong(fileToSend.length());
             int bytes = 0;
             byte[] buffer = new byte[4*1024];
             while ((bytes=fileInputStream.read(buffer))!=-1){
