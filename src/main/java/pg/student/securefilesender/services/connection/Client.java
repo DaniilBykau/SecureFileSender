@@ -20,8 +20,8 @@ public class Client implements Runnable {
     private static DataInputStream dataInputStream = null;
 
     private ListView filesUploadedList;
-    ObservableList<File> listOfFilesUploaded;
-    String ipAddressName;
+    private ObservableList<File> listOfFilesUploaded;
+    private String ipAddressName;
 
     private PublicKey rsaPublicKey;
     private AES aes;
@@ -31,8 +31,9 @@ public class Client implements Runnable {
     private byte[] iv;
 
     private File testFile;
+    private String fileName;
 
-    Socket socket;
+    private Socket socket;
 
     public Client(ListView filesUploadedList, String ipAddressName) {
         this.filesUploadedList = filesUploadedList;
@@ -50,16 +51,20 @@ public class Client implements Runnable {
             ObjectOutputStream  out = new ObjectOutputStream (socket.getOutputStream());
             ObjectInputStream  in = new ObjectInputStream (socket.getInputStream());
 
-            this.rsaPublicKey = (PublicKey) in.readObject();
-            encryption(rsaPublicKey);
-            dataOutputStream.write(encryptedAesKey);
-            dataOutputStream.write(iv);
-            dataOutputStream.flush();
-
             this.listOfFilesUploaded = filesUploadedList.getItems();
             this.testFile = listOfFilesUploaded.get(0);
-            aes.encryptFile(this.iv, this.AesKey, this.testFile);
-            File fileToSend = new File("Daniil_Bykau1.txt");
+
+            this.rsaPublicKey = (PublicKey) in.readObject();            //get Rsa
+            encryption(rsaPublicKey);                                   //encrypt Rsa
+            dataOutputStream.write(encryptedAesKey);
+            dataOutputStream.write(iv);
+            dataOutputStream.writeUTF(testFile.getName());
+            dataOutputStream.flush();                                   //send AES
+
+            String[] partsFileName = testFile.getName().split("\\.");
+
+            aes.encryptFile(this.iv, this.AesKey, this.testFile, partsFileName[0], partsFileName[1]);
+            File fileToSend = new File(partsFileName[0]+ "En." + partsFileName[1]);
             FileInputStream fileInputStream = new FileInputStream(fileToSend);
             dataOutputStream.writeLong(fileToSend.length());
             int bytes = 0;

@@ -28,17 +28,19 @@ public class Server {
     private ServerSocket serverSocket;
     private Socket clientSocket;
 
-    RSA rsa;
+    private RSA rsa;
     byte [] aesEncryptedAes = new byte[64];
-    SecretKey aesKey;
+    private SecretKey aesKey;
     private byte[] iv = new byte [16];
-    AES aes;
+    private AES aes;
 
-    File fileEncrypted;
-
+    private File fileEncrypted;
+    private String fileName;
+    private String partFileName;
+    private String partFileAfterDot;
 
     private ListView filesReceivedList;
-    ObservableList<File> listOfFilesUploaded = FXCollections.observableArrayList();
+    private ObservableList<File> listOfFilesUploaded = FXCollections.observableArrayList();
 
     public Server(ListView filesReceivedList) {
         this.filesReceivedList = filesReceivedList;
@@ -46,28 +48,28 @@ public class Server {
 
     public void startServer(Text serverStatus) {
         try {
-            serverSocket = new ServerSocket(5000);
+            this.serverSocket = new ServerSocket(5000);
             System.out.println("listening to port:5000");
             serverStatus.setText("Server started");
         } catch (Exception e) {
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
     }
 
     public void closeConnection(Text serverStatus) {
         try {
-            clientSocket.close();
+            this.clientSocket.close();
             serverStatus.setText("Connection closed");
             dataInputStream.close();
             dataOutputStream.close();
         } catch (Exception e) {
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
     }
 
     public void waitConnection(Text serverStatus) {
         try {
-            clientSocket = serverSocket.accept();
+            this.clientSocket = serverSocket.accept();
             serverStatus.setText("client connected");
             dataInputStream = new DataInputStream(clientSocket.getInputStream());
             dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
@@ -75,11 +77,12 @@ public class Server {
             rsa.initRSA();
             sendRSA();
             getEncryptedAes();
+
             receiveFile();
             aes = new AES();
-            aes.decryptFile(this.iv, this.aesKey, this.fileEncrypted);
+            aes.decryptFile(this.iv, this.aesKey, this.fileEncrypted, this.partFileName, this.partFileAfterDot);
         } catch (Exception e) {
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
     }
 
@@ -95,7 +98,7 @@ public class Server {
             this.outObject.writeObject(rsaPublicKey);
 
         } catch (Exception e) {
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
     }
 
@@ -103,30 +106,36 @@ public class Server {
         try {
             this.dataInputStream.read(this.aesEncryptedAes);
             this.dataInputStream.read(this.iv);
+            this.fileName = this.dataInputStream.readUTF();
             this.aesKey = rsa.decrypt(this.aesEncryptedAes, rsa.getPrivateKey());
         } catch (Exception e) {
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
     }
 
     public void receiveFile() {
         try {
             int bytes = 0;
-            FileOutputStream fileOutputStream = new FileOutputStream("Daniil_Bykau1.txt");
 
-            long size = dataInputStream.readLong();     // read file size
+            String[] partsFileName = this.fileName.split("\\.");
+            this.partFileName = partsFileName[0]; // fileName
+            this.partFileAfterDot = partsFileName[1]; // np .txt .mp3
+            String newName = this.partFileName + "En." + this.partFileAfterDot;
+            FileOutputStream fileOutputStream = new FileOutputStream(this.partFileName + "En." + this.partFileAfterDot);
+
+            long size = this.dataInputStream.readLong();     // read file size
             byte[] buffer = new byte[4 * 1024];
-            while (size > 0 && (bytes = dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1) {
+            while (size > 0 && (bytes = this.dataInputStream.read(buffer, 0, (int) Math.min(buffer.length, size))) != -1) {
                 fileOutputStream.write(buffer, 0, bytes);
                 size -= bytes;      // read upto file size
             }
-            this.fileEncrypted = new File("Daniil_Bykau1.txt");
+            this.fileEncrypted = new File(this.partFileName + "En." + this.partFileAfterDot);
 
             listOfFilesUploaded.add(this.fileEncrypted);
             filesReceivedList.setItems(listOfFilesUploaded);
             fileOutputStream.close();
         } catch (Exception e) {
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
     }
 }

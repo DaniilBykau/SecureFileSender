@@ -11,21 +11,6 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 public class AES {
-    public SecretKey getKey() {
-        return key;
-    }
-
-    public void setKey(SecretKey key) {
-        this.key = key;
-    }
-
-    public byte[] getIv() {
-        return iv;
-    }
-
-    public void setIv(byte[] iv) {
-        this.iv = iv;
-    }
 
     private SecretKey key;
     private byte[] iv;
@@ -79,13 +64,13 @@ public class AES {
         return new String(plainText);
     }
 
-    public void encryptFile( byte [] iv, SecretKey keyAES, File file){
+    public void encryptFile( byte [] iv, SecretKey keyAES, File file, String partFileName, String partFileAfterDot){
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
             cipher.init(Cipher.ENCRYPT_MODE, keyAES, ivParameterSpec);
             FileInputStream inputStream = new FileInputStream(file.getPath());
-            FileOutputStream outputStream = new FileOutputStream("Daniil_Bykau1.txt");
+            FileOutputStream outputStream = new FileOutputStream(partFileName + "En." + partFileAfterDot);
             byte[] buffer = new byte[8192];
             int bytesRead;
             while ((bytesRead = inputStream.read(buffer)) > 0) {
@@ -107,14 +92,14 @@ public class AES {
 
     }
 
-    public void decryptFile( byte [] iv, SecretKey keyAES, File file){
+    public void decryptFile( byte [] iv, SecretKey keyAES, File file, String partFileName, String partFileAfterDot){
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
             cipher.init(Cipher.DECRYPT_MODE, keyAES, ivParameterSpec);
-            FileInputStream inputStream = new FileInputStream("Daniil_Bykau1.txt");
-            FileOutputStream outputStream = new FileOutputStream("Daniil_Bykau2.txt");
-            byte[] buffer = new byte[8192];
+            FileInputStream inputStream = new FileInputStream(partFileName + "En." + partFileAfterDot);
+            FileOutputStream outputStream = new FileOutputStream(partFileName + "De." + partFileAfterDot);
+            byte[] buffer = new byte[32768];
             int bytesRead;
             while ((bytesRead = inputStream.read(buffer))>0) {
                 byte[] output = cipher.update(buffer, 0, bytesRead);
@@ -133,5 +118,21 @@ public class AES {
             System.out.println(e.toString());
         }
 
+    }
+
+    public SecretKey getKey() {
+        return key;
+    }
+
+    public void setKey(SecretKey key) {
+        this.key = key;
+    }
+
+    public byte[] getIv() {
+        return iv;
+    }
+
+    public void setIv(byte[] iv) {
+        this.iv = iv;
     }
 }
