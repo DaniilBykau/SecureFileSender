@@ -3,16 +3,16 @@ package pg.student.securefilesender.services.connection;
 import javafx.collections.ObservableList;
 
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import pg.student.securefilesender.services.AES.AES;
 import pg.student.securefilesender.services.RSA.RSA;
-
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.*;
 import java.net.Socket;
 import java.security.PublicKey;
-
 
 public class Client implements Runnable {
 
@@ -35,9 +35,14 @@ public class Client implements Runnable {
 
     private Socket socket;
 
-    public Client(ListView filesUploadedList, String ipAddressName) {
+    private ProgressBar progressBarSend;
+    private ProgressBar progressBarEncrypt;
+
+    public Client(ListView filesUploadedList, String ipAddressName, ProgressBar progressBarSend, ProgressBar progressBarEncrypt) {
         this.filesUploadedList = filesUploadedList;
         this.ipAddressName = ipAddressName;
+        this.progressBarSend = progressBarSend;
+        this.progressBarEncrypt = progressBarEncrypt;
     }
 
     public void sendFile(){
@@ -63,15 +68,23 @@ public class Client implements Runnable {
 
             String[] partsFileName = testFile.getName().split("\\.");
 
-            aes.encryptFile(this.iv, this.AesKey, this.testFile, partsFileName[0], partsFileName[1]);
+            aes.encryptFile(this.iv, this.AesKey, this.testFile, partsFileName[0], partsFileName[1], progressBarEncrypt);
             File fileToSend = new File(partsFileName[0]+ "En." + partsFileName[1]);
             FileInputStream fileInputStream = new FileInputStream(fileToSend);
             dataOutputStream.writeLong(fileToSend.length());
             int bytes = 0;
+            progressBarSend.setProgress(0);
             byte[] buffer = new byte[4*1024];
+
+            double loopTimes = (double) fileToSend.length() / buffer.length;
+            double step = loopTimes != 0 ? (50 / loopTimes) : 100;
+            double progress = 0;
+
             while ((bytes=fileInputStream.read(buffer))!=-1){
                 dataOutputStream.write(buffer,0,bytes);
                 dataOutputStream.flush();
+                progress += step;
+                progressBarSend.setProgress(progress);
             }
 
             fileInputStream.close();

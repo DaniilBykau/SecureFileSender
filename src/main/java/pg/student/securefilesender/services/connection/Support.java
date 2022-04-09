@@ -5,6 +5,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -17,7 +19,7 @@ public class Support {
     private ObservableList<File> filesUploaded = FXCollections.observableArrayList();
     Server server;
 
-    public void uploadFile(ActionEvent event, ListView filesUploadedList, String ipAddressName ) {
+    public void uploadFile(ActionEvent event, ListView filesUploadedList, String ipAddressName, ProgressBar progressBarSend, ProgressBar progressBarEncrypt ) {
         Node node = (Node) event.getSource();
         Stage thisStage = (Stage) node.getScene().getWindow();              //stage
 
@@ -27,7 +29,7 @@ public class Support {
         filesUploaded.add(selectedFile);
         filesUploadedList.setItems(filesUploaded);
 
-        Thread t1 = new Thread(new Client(filesUploadedList, ipAddressName));
+        Thread t1 = new Thread(new Client(filesUploadedList, ipAddressName, progressBarSend, progressBarEncrypt));
         t1.start();
     }
 

@@ -3,6 +3,8 @@ package pg.student.securefilesender.controllers;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import pg.student.securefilesender.services.connection.Support;
@@ -10,6 +12,8 @@ import pg.student.securefilesender.services.connection.Support;
 public class HelloController  {
 
     public Text serverStatus;
+    public ProgressBar progressBarSend;
+    public ProgressBar progressBarEncrypt;
 
     private Support filesSupport = new Support();
 
@@ -25,7 +29,7 @@ public class HelloController  {
     @FXML
     public void uploadFile(ActionEvent actionEvent) {
         String ipAddressName = nameIP.getText().toString();
-        filesSupport.uploadFile(actionEvent, filesUploadedList, ipAddressName);
+        filesSupport.uploadFile(actionEvent, filesUploadedList, ipAddressName, progressBarSend, progressBarEncrypt);
     }
 
     @FXML

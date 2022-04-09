@@ -1,5 +1,7 @@
 package pg.student.securefilesender.services.AES;
 
+import javafx.scene.control.ProgressBar;
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -23,7 +25,7 @@ public class AES {
             key = keyGenerator.generateKey();
         }
         catch (Exception e){
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
         this.iv = generateIv();
         return key;
@@ -44,7 +46,7 @@ public class AES {
             cipher.init(Cipher.ENCRYPT_MODE, this.key, ivParameterSpec);
             cipherText = cipher.doFinal(textToEncrypt.getBytes());
         }catch (Exception e){
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
         return Base64.getEncoder()
                 .encodeToString(cipherText);
@@ -59,12 +61,12 @@ public class AES {
             plainText = cipher.doFinal(Base64.getDecoder()
                     .decode(textToDecrypt));
         }catch (Exception e){
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
         return new String(plainText);
     }
 
-    public void encryptFile( byte [] iv, SecretKey keyAES, File file, String partFileName, String partFileAfterDot){
+    public void encryptFile( byte [] iv, SecretKey keyAES, File file, String partFileName, String partFileAfterDot, ProgressBar progressBarEncrypt){
         try {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
@@ -73,10 +75,17 @@ public class AES {
             FileOutputStream outputStream = new FileOutputStream(partFileName + "En." + partFileAfterDot);
             byte[] buffer = new byte[8192];
             int bytesRead;
+
+            double loopTimes = (double) file.length() / buffer.length;
+            double step = loopTimes != 0 ? (50 / loopTimes) : 100;
+            double progress = 0;
+
             while ((bytesRead = inputStream.read(buffer)) > 0) {
                 byte[] output = cipher.update(buffer, 0, bytesRead);
                 if (output != null) {
                     outputStream.write(output);
+                    progress += step;
+                    progressBarEncrypt.setProgress(progress);
                 }
             }
             byte[] outputBytes = cipher.doFinal();
@@ -87,9 +96,8 @@ public class AES {
             outputStream.close();
         }
         catch (Exception e){
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
-
     }
 
     public void decryptFile( byte [] iv, SecretKey keyAES, File file, String partFileName, String partFileAfterDot){
@@ -99,7 +107,7 @@ public class AES {
             cipher.init(Cipher.DECRYPT_MODE, keyAES, ivParameterSpec);
             FileInputStream inputStream = new FileInputStream(partFileName + "En." + partFileAfterDot);
             FileOutputStream outputStream = new FileOutputStream(partFileName + "De." + partFileAfterDot);
-            byte[] buffer = new byte[32768];
+            byte[] buffer = new byte[8192];
             int bytesRead;
             while ((bytesRead = inputStream.read(buffer))>0) {
                 byte[] output = cipher.update(buffer, 0, bytesRead);
@@ -115,7 +123,7 @@ public class AES {
             outputStream.close();
         }
         catch (Exception e){
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
 
     }

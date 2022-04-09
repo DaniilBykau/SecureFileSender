@@ -59,6 +59,7 @@ public class Server {
     public void closeConnection(Text serverStatus) {
         try {
             this.clientSocket.close();
+            this.serverSocket.close();
             serverStatus.setText("Connection closed");
             dataInputStream.close();
             dataOutputStream.close();
