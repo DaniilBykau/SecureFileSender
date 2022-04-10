@@ -1,10 +1,16 @@
 package pg.student.securefilesender.services.connection;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import pg.student.securefilesender.services.AES.AES;
 import pg.student.securefilesender.services.RSA.RSA;
 
@@ -16,12 +22,13 @@ import java.security.PublicKey;
 
 public class Client implements Runnable {
 
-    private static DataOutputStream dataOutputStream = null;
-    private static DataInputStream dataInputStream = null;
+    private DataOutputStream dataOutputStream = null;
+    private DataInputStream dataInputStream = null;
 
     private ListView filesUploadedList;
     private ObservableList<File> listOfFilesUploaded;
     private String ipAddressName;
+    private Text serverStatus;
 
     private PublicKey rsaPublicKey;
     private AES aes;
@@ -38,17 +45,31 @@ public class Client implements Runnable {
     private ProgressBar progressBarSend;
     private ProgressBar progressBarEncrypt;
 
-    public Client(ListView filesUploadedList, String ipAddressName, ProgressBar progressBarSend, ProgressBar progressBarEncrypt) {
+    private ObservableList<File> filesUploaded = FXCollections.observableArrayList();
+    private ActionEvent event;
+
+    public Client(ListView filesUploadedList, String ipAddressName, ProgressBar progressBarSend, ProgressBar progressBarEncrypt, Text serverStatus, ActionEvent event) {
         this.filesUploadedList = filesUploadedList;
         this.ipAddressName = ipAddressName;
         this.progressBarSend = progressBarSend;
         this.progressBarEncrypt = progressBarEncrypt;
+        this.serverStatus = serverStatus;
+        this.event = event;
+    }
+
+    public void startSocket(){
+        try {
+            this.socket = new Socket(ipAddressName, 5000);
+            System.out.println("Connected");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void sendFile(){
         try {
 
-            this.socket = new Socket(ipAddressName, 5000);
 
             dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
@@ -92,7 +113,7 @@ public class Client implements Runnable {
             dataInputStream.close();
         }
         catch (Exception e){
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
     }
 
@@ -106,12 +127,23 @@ public class Client implements Runnable {
             this.encryptedAesKey = rsa.encrypt(this.AesKey, rsaPublicKey);
         }
         catch (Exception e){
-            System.out.println(e.toString());
+            e.printStackTrace();
         }
     }
 
     @Override
     public void run() {
         sendFile();
+    }
+
+    public void chooseFile(){
+        Node node = (Node) event.getSource();
+        Stage thisStage = (Stage) node.getScene().getWindow();              //stage
+
+        FileChooser fileChooser = new FileChooser();
+        File selectedFile = fileChooser.showOpenDialog(thisStage);          //file
+
+        filesUploaded.add(selectedFile);
+        filesUploadedList.setItems(filesUploaded);
     }
 }

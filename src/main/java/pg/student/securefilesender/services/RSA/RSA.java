@@ -30,7 +30,7 @@ public class RSA {
             privateKey = pair.getPrivate();
             publicKey = pair.getPublic();
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 

@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
@@ -16,33 +17,47 @@ import java.io.File;
 
 public class Support {
 
-    private ObservableList<File> filesUploaded = FXCollections.observableArrayList();
     Server server;
+    Client client;
 
-    public void uploadFile(ActionEvent event, ListView filesUploadedList, String ipAddressName, ProgressBar progressBarSend, ProgressBar progressBarEncrypt ) {
-        Node node = (Node) event.getSource();
-        Stage thisStage = (Stage) node.getScene().getWindow();              //stage
-
-        FileChooser fileChooser = new FileChooser();
-        File selectedFile = fileChooser.showOpenDialog(thisStage);          //file
-
-        filesUploaded.add(selectedFile);
-        filesUploadedList.setItems(filesUploaded);
-
-        Thread t1 = new Thread(new Client(filesUploadedList, ipAddressName, progressBarSend, progressBarEncrypt));
-        t1.start();
+    public void connectToServer(ActionEvent event, ListView filesUploadedList, String ipAddressName, ProgressBar progressBarSend, ProgressBar progressBarEncrypt, Text serverStatus, Button buttonChooseFile) {
+        try {
+            this.client = new Client(filesUploadedList, ipAddressName, progressBarSend, progressBarEncrypt, serverStatus, event);
+            this.client.startSocket();
+            buttonChooseFile.setVisible(true);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
-    public void startConnection(ActionEvent event, ListView filesReceivedList, Text serverStatus){
-        server = new Server(filesReceivedList);
-        server.startServer(serverStatus);
+    public void startConnection(ActionEvent event, ListView filesReceivedList, Text serverStatus, Button buttonCloseConnection, Button buttonWaitConnection){
+        this.server = new Server(filesReceivedList);
+        this.server.startServer(serverStatus);
+        buttonCloseConnection.setVisible(true);
+        buttonWaitConnection.setVisible(true);
     }
 
     public void closeConnection(ActionEvent event, Text serverStatus){
-        server.closeConnection(serverStatus);
+        this.server.closeConnection(serverStatus);
     }
 
     public void waitConnection(ActionEvent event, Text serverStatus){
-        server.waitConnection(serverStatus);
+        this.server.waitConnection(serverStatus);
+    }
+
+    public void uploadFile(ActionEvent actionEvent, Text serverStatus) {
+        Thread t1 = new Thread(this.client);
+        t1.start();
+    }
+
+    public void chooseFile(ActionEvent actionEvent, Text serverStatus, Button buttonUploadFile) {
+        try {
+            this.client.chooseFile();
+            buttonUploadFile.setVisible(true);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

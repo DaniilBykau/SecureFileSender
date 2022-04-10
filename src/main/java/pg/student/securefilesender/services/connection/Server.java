@@ -19,11 +19,11 @@ import java.util.List;
 
 public class Server {
 
-    private static DataOutputStream dataOutputStream = null;
-    private static DataInputStream dataInputStream = null;
+    private DataOutputStream dataOutputStream = null;
+    private DataInputStream dataInputStream = null;
 
-    private static ObjectOutputStream outObject = null;
-    private static ObjectInputStream inObject = null;
+    private ObjectOutputStream outObject = null;
+    private ObjectInputStream inObject = null;
 
     private ServerSocket serverSocket;
     private Socket clientSocket;
@@ -63,6 +63,8 @@ public class Server {
             serverStatus.setText("Connection closed");
             dataInputStream.close();
             dataOutputStream.close();
+            outObject.close();
+            inObject.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -121,7 +123,7 @@ public class Server {
             String[] partsFileName = this.fileName.split("\\.");
             this.partFileName = partsFileName[0]; // fileName
             this.partFileAfterDot = partsFileName[1]; // np .txt .mp3
-            String newName = this.partFileName + "En." + this.partFileAfterDot;
+
             FileOutputStream fileOutputStream = new FileOutputStream(this.partFileName + "En." + this.partFileAfterDot);
 
             long size = this.dataInputStream.readLong();     // read file size
