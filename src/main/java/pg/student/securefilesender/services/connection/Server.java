@@ -41,6 +41,7 @@ public class Server {
 
     private ListView filesReceivedList;
     private ObservableList<File> listOfFilesUploaded = FXCollections.observableArrayList();
+    private String securityType;
 
     public Server(ListView filesReceivedList) {
         this.filesReceivedList = filesReceivedList;
@@ -80,10 +81,13 @@ public class Server {
             rsa.initRSA();
             sendRSA();
             getEncryptedAes();
-
             receiveFile();
+            if(fileEncrypted!=null){
+                dataOutputStream.writeUTF("received");
+                dataOutputStream.flush();
+            }
             aes = new AES();
-            aes.decryptFile(this.iv, this.aesKey, this.fileEncrypted, this.partFileName, this.partFileAfterDot);
+            aes.decryptFile(this.iv, this.aesKey, this.fileEncrypted, this.partFileName, this.partFileAfterDot, this.securityType);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -110,6 +114,7 @@ public class Server {
             this.dataInputStream.read(this.aesEncryptedAes);
             this.dataInputStream.read(this.iv);
             this.fileName = this.dataInputStream.readUTF();
+            this.securityType = this.dataInputStream.readUTF();
             this.aesKey = rsa.decrypt(this.aesEncryptedAes, rsa.getPrivateKey());
         } catch (Exception e) {
             e.printStackTrace();

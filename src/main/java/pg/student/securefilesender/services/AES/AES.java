@@ -66,9 +66,9 @@ public class AES {
         return new String(plainText);
     }
 
-    public void encryptFile( byte [] iv, SecretKey keyAES, File file, String partFileName, String partFileAfterDot, ProgressBar progressBarEncrypt){
+    public void encryptFile( byte [] iv, SecretKey keyAES, File file, String partFileName, String partFileAfterDot, ProgressBar progressBarEncrypt, String securityType){
         try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance("AES/" + securityType + "/PKCS5Padding");
             IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
             cipher.init(Cipher.ENCRYPT_MODE, keyAES, ivParameterSpec);
             FileInputStream inputStream = new FileInputStream(file.getPath());
@@ -100,9 +100,9 @@ public class AES {
         }
     }
 
-    public void decryptFile( byte [] iv, SecretKey keyAES, File file, String partFileName, String partFileAfterDot){
+    public void decryptFile( byte [] iv, SecretKey keyAES, File file, String partFileName, String partFileAfterDot, String securityType){
         try {
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance("AES/" + securityType + "/PKCS5Padding");
             IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
             cipher.init(Cipher.DECRYPT_MODE, keyAES, ivParameterSpec);
             FileInputStream inputStream = new FileInputStream(partFileName + "En." + partFileAfterDot);

@@ -9,7 +9,7 @@
         <AnchorPane prefHeight="360.0" prefWidth="320.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1">
             <Text AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="10.0">IP: </Text>
             <TextField fx:id="nameIP" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="5.0" />
-            <Text fx:id="serverStatus" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="10.0">Status</Text>
+            <Text fx:id="serverStatus" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="10.0"> </Text>
             <Button onAction="#Connect" text="Connect" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="35.0" />
             <Button fx:id="buttonChooseFile" onAction="#chooseFile" text="Choose file" AnchorPane.leftAnchor="90.0" AnchorPane.topAnchor="35.0" visible="false"/>
             <Button fx:id="buttonUploadFile" onAction="#uploadFile" text="Upload file" AnchorPane.leftAnchor="185.0" AnchorPane.topAnchor="35.0" visible="false"/>
@@ -20,8 +20,8 @@
             <ProgressBar fx:id="progressBarEncrypt" layoutX="50.0" layoutY="340.0" prefWidth="200.0" progress="0.0" />
             <Text AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="320.0">Send: </Text>
             <Text AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="340.0">Encrypt: </Text>
-            <RadioButton layoutX="7.0" layoutY="267.0" mnemonicParsing="false" text="CBC" />
-            <RadioButton layoutX="7.0" layoutY="284.0" mnemonicParsing="false" text="ECB" />
+            <RadioButton fx:id="cbcRadioButton" layoutX="7.0" layoutY="267.0" mnemonicParsing="false" text="CBC" />
+            <RadioButton fx:id="ofbRadioButton" layoutX="7.0" layoutY="284.0" mnemonicParsing="false" text="OFB" />
         </AnchorPane>
 
         <VBox xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">

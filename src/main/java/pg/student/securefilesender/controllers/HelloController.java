@@ -15,6 +15,8 @@ public class HelloController  {
     public Button buttonWaitConnection;
     public Button buttonUploadFile;
     public Button buttonChooseFile;
+    public RadioButton cbcRadioButton;
+    public RadioButton ofbRadioButton;
 
     private Support filesSupport = new Support();
 
@@ -35,7 +37,6 @@ public class HelloController  {
     @FXML
     public void startConnection(ActionEvent actionEvent) {          //server
         filesSupport.startConnection(actionEvent, filesReceivedList, serverStatus, buttonWaitConnection, buttonCloseConnection);
-
     }
 
     public void closeConnection(ActionEvent actionEvent) {
@@ -48,7 +49,8 @@ public class HelloController  {
 
     public void Connect(ActionEvent actionEvent) {                  //client
         String ipAddressName = nameIP.getText().toString();
-        filesSupport.connectToServer(actionEvent, filesUploadedList, ipAddressName, progressBarSend, progressBarEncrypt, serverStatus, buttonChooseFile);
+        filesSupport.connectToServer(actionEvent, filesUploadedList, ipAddressName, progressBarSend, progressBarEncrypt,
+                serverStatus, buttonChooseFile, cbcRadioButton, ofbRadioButton);
     }
 
     public void chooseFile(ActionEvent actionEvent) {

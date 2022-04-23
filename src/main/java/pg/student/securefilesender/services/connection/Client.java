@@ -7,7 +7,6 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -15,7 +14,6 @@ import pg.student.securefilesender.services.AES.AES;
 import pg.student.securefilesender.services.RSA.RSA;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
 import java.io.*;
 import java.net.Socket;
 import java.security.PublicKey;
@@ -48,13 +46,17 @@ public class Client implements Runnable {
     private ObservableList<File> filesUploaded = FXCollections.observableArrayList();
     private ActionEvent event;
 
-    public Client(ListView filesUploadedList, String ipAddressName, ProgressBar progressBarSend, ProgressBar progressBarEncrypt, Text serverStatus, ActionEvent event) {
+    private String securityType;
+
+    public Client(ListView filesUploadedList, String ipAddressName, ProgressBar progressBarSend, ProgressBar progressBarEncrypt,
+                  Text serverStatus, ActionEvent event, String securityType) {
         this.filesUploadedList = filesUploadedList;
         this.ipAddressName = ipAddressName;
         this.progressBarSend = progressBarSend;
         this.progressBarEncrypt = progressBarEncrypt;
         this.serverStatus = serverStatus;
         this.event = event;
+        this.securityType = securityType;
     }
 
     public void startSocket(){
@@ -70,7 +72,6 @@ public class Client implements Runnable {
     public void sendFile(){
         try {
 
-
             dataInputStream = new DataInputStream(socket.getInputStream());
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
@@ -85,11 +86,12 @@ public class Client implements Runnable {
             dataOutputStream.write(encryptedAesKey);
             dataOutputStream.write(iv);
             dataOutputStream.writeUTF(testFile.getName());
+            dataOutputStream.writeUTF(this.securityType);
             dataOutputStream.flush();                                   //send AES
 
             String[] partsFileName = testFile.getName().split("\\.");
 
-            aes.encryptFile(this.iv, this.AesKey, this.testFile, partsFileName[0], partsFileName[1], progressBarEncrypt);
+            aes.encryptFile(this.iv, this.AesKey, this.testFile, partsFileName[0], partsFileName[1], progressBarEncrypt, securityType);
             File fileToSend = new File(partsFileName[0]+ "En." + partsFileName[1]);
             FileInputStream fileInputStream = new FileInputStream(fileToSend);
             dataOutputStream.writeLong(fileToSend.length());
@@ -107,6 +109,8 @@ public class Client implements Runnable {
                 progress += step;
                 progressBarSend.setProgress(progress);
             }
+            String status = this.dataInputStream.readUTF();;
+            this.serverStatus.setText(status);
 
             fileInputStream.close();
             dataInputStream.close();
